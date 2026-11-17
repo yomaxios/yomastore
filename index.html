@@ -1,1 +1,117 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#d71920">
+<title>YOMA STORE</title>
+<style>
+:root{--red:#d71920;--dark:#111;--muted:#777;--bg:#f5f5f5;--white:#fff}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,"Noto Sans Khmer",sans-serif;background:var(--bg);color:var(--dark)}
+header{background:#111;color:#fff;position:sticky;top:0;z-index:10;box-shadow:0 2px 12px #0002}
+.top{max-width:1100px;margin:auto;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-size:22px;font-weight:900;letter-spacing:1px}.brand span{color:#ff343b}
+.actions{display:flex;gap:8px}.btn{border:0;border-radius:9px;padding:10px 14px;font-weight:700;cursor:pointer}
+.btn-red{background:var(--red);color:white}.btn-dark{background:#222;color:white}.btn-light{background:white;color:#111;border:1px solid #ddd}
+main{max-width:1100px;margin:auto;padding:18px}
+.hero{background:linear-gradient(120deg,#171717,#3a090b);color:#fff;border-radius:18px;padding:28px 22px;margin:10px 0 18px}
+.hero h1{font-size:30px;margin:0 0 8px}.hero p{color:#ddd;margin:0 0 16px;line-height:1.6}
+.search{width:100%;padding:13px 15px;border:1px solid #ddd;border-radius:11px;font-size:15px;margin:8px 0 14px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 18px}
+.filter{background:#fff;border:1px solid #ddd;color:#333;border-radius:30px;padding:9px 14px;cursor:pointer;font-weight:700}
+.filter.active{background:var(--red);color:#fff;border-color:var(--red)}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin:18px 0 12px}
+.section-title h2{font-size:20px;margin:0}.count{font-size:13px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.card{background:#fff;border:1px solid #eee;border-radius:14px;overflow:hidden;box-shadow:0 3px 12px #00000008}
+.thumb{height:125px;background:linear-gradient(135deg,#222,#555);display:flex;align-items:center;justify-content:center;color:#fff;font-size:34px;font-weight:900}
+.info{padding:13px}.tag{font-size:11px;color:var(--red);font-weight:800;text-transform:uppercase}
+.info h3{font-size:15px;margin:7px 0}.desc{font-size:12px;color:var(--muted);min-height:30px}
+.price-row{display:flex;justify-content:space-between;align-items:center;margin:12px 0}
+.price{font-weight:900;font-size:18px}.buy{width:100%;background:var(--red);color:#fff;border:0;border-radius:9px;padding:10px;font-weight:800;cursor:pointer}
+.panels{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0}
+.panel{background:#fff;border-radius:13px;padding:16px;border:1px solid #eee}.panel h3{margin:0 0 8px;font-size:16px}.panel p{color:var(--muted);font-size:13px;margin:0;line-height:1.5}
+footer{background:#111;color:#ddd;text-align:center;padding:24px 16px;margin-top:30px;font-size:13px}
+.modal{display:none;position:fixed;inset:0;background:#0009;z-index:30;align-items:center;justify-content:center;padding:18px}
+.modal.show{display:flex}.box{background:#fff;border-radius:16px;padding:20px;width:min(440px,100%);max-height:90vh;overflow:auto}
+.box h2{margin:0 0 10px}.box p{color:#555;line-height:1.55}.close{float:right;border:0;background:#eee;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:18px}
+.qty{display:flex;align-items:center;gap:12px;margin:15px 0}.qty button{width:34px;height:34px;border:0;border-radius:8px;background:#eee;font-size:18px}
+.empty{background:white;border-radius:12px;padding:24px;text-align:center;color:#777;grid-column:1/-1}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.panels{grid-template-columns:1fr}.hero h1{font-size:25px}}
+@media(max-width:380px){.grid{grid-template-columns:1fr}.brand{font-size:19px}.top{padding:12px}}
+</style>
+</head>
+<body>
+<header><div class="top">
+  <div class="brand">YOMA <span>STORE</span></div>
+  <div class="actions"><button class="btn btn-dark" onclick="showCart()">🛒 <span id="cartCount">0</span></button><a class="btn btn-red" style="text-decoration:none" href="https://t.me/YOMAXIOS" target="_blank">Contact</a></div>
+</div></header>
+<main>
+  <section class="hero">
+    <h1>Welcome to YOMA STORE</h1>
+    <p>ទិញទំនិញឌីជីថល និង MODS ងាយស្រួល រហ័ស និងមានសេវាកម្មជួយណែនាំ។</p>
+    <a class="btn btn-red" href="#products" style="display:inline-block;text-decoration:none">Explore Products</a>
+  </section>
+  <input id="search" class="search" placeholder="🔎 ស្វែងរកទំនិញ..." oninput="renderProducts()">
+  <div class="filters" id="filters">
+    <button class="filter active" data-cat="All">All</button>
+    <button class="filter" data-cat="Non Root">NON ROOT</button>
+    <button class="filter" data-cat="Root">ROOT</button>
+    <button class="filter" data-cat="Android">ANDROID</button>
+    <button class="filter" data-cat="iPhone">I PHONE</button>
+    <button class="filter" data-cat="PC">PC</button>
+    <button class="filter" data-cat="Other">OTHER</button>
+  </div>
+  <section id="products">
+    <div class="section-title"><h2>🛍️ Products</h2><span class="count" id="productCount"></span></div>
+    <div class="grid" id="productGrid"></div>
+  </section>
+  <section class="panels">
+    <div class="panel"><h3>🏆 Top Buyers</h3><p>បង្ហាញអតិថិជនឆ្នើមនៅទីនេះ។ អ្នកអាចភ្ជាប់ទិន្នន័យពិតនៅពេលបន្ថែម Database។</p></div>
+    <div class="panel"><h3>🚀 Recent Orders</h3><p>បង្ហាញការបញ្ជាទិញថ្មីៗនៅទីនេះ។ ការបញ្ជាទិញក្នុង Demo នេះត្រូវទាក់ទងតាម Telegram។</p></div>
+    <div class="panel"><h3>💬 Feedbacks</h3><p>បន្ថែមមតិយោបល់ពិតពីអតិថិជនរបស់ YOMA STORE នៅទីនេះ។</p></div>
+  </section>
+</main>
+<footer>© 2026 YOMA STORE · All Rights Reserved<br><br>Support: <a href="https://t.me/YOMAXIOS" style="color:#ff555b">@YOMAXIOS</a></footer>
 
+<div class="modal" id="productModal"><div class="box">
+  <button class="close" onclick="closeModal('productModal')">×</button>
+  <div id="productDetail"></div>
+</div></div>
+<div class="modal" id="cartModal"><div class="box">
+  <button class="close" onclick="closeModal('cartModal')">×</button>
+  <h2>🛒 Your Cart</h2><div id="cartItems"></div><div class="price-row"><b>Total</b><b class="price" id="cartTotal">$0.00</b></div>
+  <button class="buy" onclick="checkout()">Order via Telegram</button>
+</div></div>
+<script>
+const products = [
+ {id:1,name:"REZZX MOD ANDROID-IOS",cat:"Android",type:"Non Root",price:2.50,desc:"Digital file & setup guide",icon:"⚡"},
+ {id:2,name:"DRIP WIRE EXTERNAL",cat:"PC",type:"Root",price:3.00,desc:"File and setup support",icon:"🖥️"},
+ {id:3,name:"FF GLORY PRO",cat:"Android",type:"Non Root",price:4.00,desc:"Premium digital product",icon:"🔥"},
+ {id:4,name:"PRIME MOD",cat:"Android",type:"Root",price:2.00,desc:"Root version · setup guide",icon:"🛡️"},
+ {id:5,name:"BR MOD APK",cat:"Android",type:"Non Root",price:1.50,desc:"Digital file & instructions",icon:"📱"},
+ {id:6,name:"iPhone Premium Tool",cat:"iPhone",type:"Non Root",price:5.00,desc:"For supported iOS devices",icon:"🍎"},
+ {id:7,name:"PC Utility Pack",cat:"PC",type:"Non Root",price:3.50,desc:"PC tools and instructions",icon:"💻"},
+ {id:8,name:"Other Digital Service",cat:"Other",type:"Non Root",price:1.00,desc:"Contact us for details",icon:"✨"}
+];
+let activeCat="All", cart=[];
+const money=n=>"$"+n.toFixed(2);
+function renderProducts(){
+ const q=document.getElementById("search").value.toLowerCase();
+ const list=products.filter(p=>(activeCat==="All"||p.cat===activeCat||p.type===activeCat)&&(`${p.name} ${p.cat} ${p.type}`.toLowerCase().includes(q)));
+ document.getElementById("productCount").textContent=list.length+" items";
+ document.getElementById("productGrid").innerHTML=list.length?list.map(p=>`
+ <article class="card"><div class="thumb">${p.icon}</div><div class="info"><div class="tag">${p.cat} · ${p.type}</div><h3>${p.name}</h3><div class="desc">${p.desc}</div><div class="price-row"><span class="price">${money(p.price)}</span><span class="count">FILE & SETUP</span></div><button class="buy" onclick="openProduct(${p.id})">Buy Now</button></div></article>`).join(""):'<div class="empty">រកមិនឃើញទំនិញទេ។</div>';
+}
+document.querySelectorAll(".filter").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));b.classList.add("active");activeCat=b.dataset.cat;renderProducts()}));
+function openProduct(id){const p=products.find(x=>x.id===id);document.getElementById("productDetail").innerHTML=`<div class="thumb" style="border-radius:12px">${p.icon}</div><h2>${p.name}</h2><p>${p.desc}</p><p><b>Category:</b> ${p.cat} · ${p.type}</p><div class="price">${money(p.price)}</div><button class="buy" style="margin-top:14px" onclick="addToCart(${p.id})">Add to Cart</button>`;document.getElementById("productModal").classList.add("show")}
+function addToCart(id){const item=cart.find(x=>x.id===id);if(item)item.qty++;else cart.push({id,qty:1});updateCart();closeModal("productModal");}
+function updateCart(){document.getElementById("cartCount").textContent=cart.reduce((s,x)=>s+x.qty,0)}
+function showCart(){const box=document.getElementById("cartItems");if(!cart.length)box.innerHTML='<p>Your cart is empty.</p>';else box.innerHTML=cart.map(x=>{const p=products.find(y=>y.id===x.id);return `<div class="price-row"><span>${p.name} × ${x.qty}</span><b>${money(p.price*x.qty)}</b></div>`}).join("");document.getElementById("cartTotal").textContent=money(cart.reduce((s,x)=>s+products.find(p=>p.id===x.id).price*x.qty,0));document.getElementById("cartModal").classList.add("show")}
+function checkout(){if(!cart.length){alert("Your cart is empty");return}const lines=cart.map(x=>{const p=products.find(y=>y.id===x.id);return `${p.name} x ${x.qty} = ${money(p.price*x.qty)}`});const total=cart.reduce((s,x)=>s+products.find(p=>p.id===x.id).price*x.qty,0);const msg=encodeURIComponent("Hello YOMA STORE, I want to order:\n"+lines.join("\n")+"\nTotal: "+money(total));window.open("https://t.me/YOMAXIOS?text="+msg,"_blank")}
+function closeModal(id){document.getElementById(id).classList.remove("show")}
+window.addEventListener("click",e=>{if(e.target.classList.contains("modal"))e.target.classList.remove("show")});
+renderProducts();
+</script>
+</body>
+</html>
